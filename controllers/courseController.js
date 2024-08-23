@@ -156,7 +156,12 @@ export const deleteLecture = catchAsyncError(async (req, res, next) => {
 });
 
 Course.watch().on("change", async () => {
-  const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+  let stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+
+  // If no stats document exists, create a new one
+  if (stats.length === 0) {
+    stats = [await Stats.create({ users: 0, subscription: 0, views: 0 })];
+  }
 
   const courses = await Course.find({});
 
@@ -165,8 +170,10 @@ Course.watch().on("change", async () => {
   for (let i = 0; i < courses.length; i++) {
     totalViews += courses[i].views;
   }
+
   stats[0].views = totalViews;
   stats[0].createdAt = new Date(Date.now());
 
   await stats[0].save();
 });
+
