@@ -10,7 +10,7 @@ import { isAuthenticated } from "../middlewares/auth.js";
 const router = express.Router();
 
 // Buy Subscription
-router.route("/subscribe").get(isAuthenticated, buySubscription);
+router.route("/subscribe").post(isAuthenticated, buySubscription);
 
 // Verify Payment and save reference in database
 router.route("/paymentverification").post(isAuthenticated, paymentVerification);
